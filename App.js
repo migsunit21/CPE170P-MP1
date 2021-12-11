@@ -1,18 +1,21 @@
 import { StatusBar } from 'expo-status-bar';
 import React, {useState} from 'react';
-import { StyleSheet, Text, View, SafeAreaView, ScrollView, TextInput, TouchableOpacity, Alert, FlatList, RefreshControl } from 'react-native';
+import { StyleSheet, Text, View, SafeAreaView, ScrollView, TextInput, TouchableOpacity, Alert, FlatList, RefreshControl, Pressable } from 'react-native';
+import { backgroundColor } from 'react-native/Libraries/Components/View/ReactNativeStyleAttributes';
 // import { TouchableHighlight } from 'react-native-web';
 
 const wait = (timeout) => {
   return new Promise(resolve => setTimeout(resolve, timeout));
 }
-
 export default function App() {
   const [refreshing, setRefreshing] = React.useState(false);
+
+  const [bgColor, setBgColor] = useState(randomHex());
 
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
     wait(2000).then(() => setRefreshing(false));
+    console.log("im here")
   }, []);
 
 
@@ -41,12 +44,15 @@ export default function App() {
     ])
   }
 
-  const pressHandler2 = (id) => {
-    console.log(id)
-    setItems((prevPeople) => {
-      return prevPeople.filter(items => items.id != id)
-    })
+  function randomHex() {
+    let letters = "0123456789ABCDEF";
+    let color = "#";
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
   }
+
 
   return (
     <SafeAreaView style={styles.container}>
@@ -60,7 +66,7 @@ export default function App() {
           />
         }
       >
-      <View style={styles.body}>
+      <View style={[styles.body, {backgroundColor: bgColor}]}>
       <View style={{alignItems: 'center'}}>
         <Text style={styles.headerText2}>This is a sample of a text input</Text>
       </View>
@@ -81,14 +87,14 @@ export default function App() {
               )
           })}
 
-          <Text style={[styles.headerText2,{marginVertical:10,marginTop:70}]}>This is a sample of a flatlist with a filter component</Text> 
+          <Text style={[styles.headerText2,{marginVertical:10,marginTop:70}]}>This is a sample of a flatlist with a touchable component that changes the background color</Text> 
           <FlatList
             numColumns={2}
             keyExtractor={(item) => item.id}
             data={items}
             renderItem={({item}) => (
-              <TouchableOpacity onPress={() => pressHandler2(item.id)}>
-              <Text style={styles.item2}>{item.name}</Text>
+              <TouchableOpacity onPress={() => setBgColor(randomHex())}>
+                <Text style={styles.item2}>{item.name}</Text>
               </TouchableOpacity>
             )}
           />
@@ -158,6 +164,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: "#EAE2B7"
+    // backgroundColor: "#EAE2B7"
   }
 });
